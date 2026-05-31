@@ -90,7 +90,8 @@ let
               extra = (environ.extra or [ ]) ++ conflictExtras;
             }
           );
-      pythonVersion = environ'.python_full_version.value;
+      _pythonVersion = environ'.python_full_version.value;
+      pythonVersion = builtins.trace (_pythonVersion // { msg = "pythonVersion TRACE"; }) _pythonVersion;
 
       resolved = lock1.resolveDependencies {
         lock = lock1.filterConflicts {
@@ -113,7 +114,9 @@ let
 
     in
     # Assert that requires-python from uv.lock is compatible with this interpreter
-    assert all (spec: pep440.comparators.${spec.op} pythonVersion spec.version) uvLock.requires-python;
+    assert all (
+      spec: pep440.comparators.${spec.op} pythonVersion (builtins.trace spec.version spec.version)
+    ) (builtins.trace uvLock.requires-python uvLock.requires-python);
     # Assert that supported-environments is compatible with this environment
     assert
       uvLock.supported-markers != { }
