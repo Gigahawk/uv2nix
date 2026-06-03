@@ -113,7 +113,9 @@ let
 
     in
     # Assert that requires-python from uv.lock is compatible with this interpreter
-    assert all (spec: pep440.comparators.${spec.op} pythonVersion spec.version) uvLock.requires-python;
+    # Disable for now due to https://github.com/pyproject-nix/uv2nix/issues/350
+    # assert all (spec: pep440.comparators.${spec.op} pythonVersion spec.version) uvLock.requires-python;
+
     # Assert that supported-environments is compatible with this environment
     assert
       uvLock.supported-markers != { }
